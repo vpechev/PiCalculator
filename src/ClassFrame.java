@@ -9,12 +9,16 @@ public class ClassFrame extends JFrame implements ActionListener {
 	private JPanel myPanel;
 	private JTextField numberOfThreadsField;
 	private JTextField precisionField;
+	private JTextField outputFileField;
 	private JTextArea outputField;
 	private JTextArea logsField;
     private JButton submitBtn = new JButton("Calculate Pi");
-
-    public ClassFrame()
+    private boolean isQuiet;
+    
+    public ClassFrame(boolean isQuiet)
     {
+    	this.isQuiet = isQuiet;
+    	
         myPanel = new JPanel();
         myPanel.setName("Pi");
         add(myPanel);
@@ -31,6 +35,12 @@ public class ClassFrame extends JFrame implements ActionListener {
         precisionLabel.setLabelFor(precisionField);
         myPanel.add(precisionLabel);
         myPanel.add(precisionField);
+        
+        outputFileField = new JTextField();
+        JLabel outputFileNameLabel = new JLabel("Output File name");
+        outputFileNameLabel.setLabelFor(precisionField);
+        myPanel.add(outputFileNameLabel);
+        myPanel.add(outputFileField);
         
         myPanel.setLayout(new GridLayout(0, 1));
         myPanel.add(submitBtn);
@@ -57,17 +67,16 @@ public class ClassFrame extends JFrame implements ActionListener {
         	try{
         		int threadsCount = Integer.parseInt(numberOfThreadsField.getText());
         		int precisionVal = Integer.parseInt(precisionField.getText());
-        		String outputFileName = "result.txt";
+        		String outputFileName = outputFileField.getText();
+        		ProgramParams programParams;
+        		if(isQuiet){
+        			programParams = new ProgramParams(threadsCount, precisionVal, isQuiet, outputFileName, outputField, null);
+        		} else {
+        			programParams = new ProgramParams(threadsCount, precisionVal, isQuiet, outputFileName, outputField, logsField);
+        		}
         		
-        		long t1 = System.currentTimeMillis();
-        		String result = PiCalculator.calculatePi(threadsCount, precisionVal).toString(true);
-        		long t2 = System.currentTimeMillis();
-        		long totalTime = t2 - t1;
-        		
-        		Utility.writeToFile(outputFileName, result);
-        		
-        		outputField.setText("Result: " + result + "\nTotal execution time: " + totalTime + "ms.");
-        		logsField.setText("Additional logs");
+        		Utility.computeMeasureWriteToFilePi(programParams);
+        		        		
         	} catch(NumberFormatException nfe){
         		logsField.setText("Invalid data \n" + nfe.getMessage());
         	}

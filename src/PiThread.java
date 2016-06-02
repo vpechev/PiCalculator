@@ -1,5 +1,6 @@
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apfloat.Apfloat;
 import org.apfloat.Apint;
 import org.apfloat.ApintMath;
@@ -29,8 +30,10 @@ public class PiThread extends Thread {
     private final int   ChSz;
     private final Apint ChSzAp;
     private boolean check;
+    private static ProgramParams programParams;
     
-    public PiThread(int numLabel, Long precI, int chunkLength) {
+    public PiThread(int numLabel, ProgramParams programParams, int chunkLength) {
+    	PiThread.programParams = programParams;
         myLabel = numLabel+1;
         ChSz    = chunkLength;
         zero    = new Apint(0L);
@@ -38,19 +41,20 @@ public class PiThread extends Thread {
         two     = new Apint( 2L);
         three   = new Apint( 3L);
         four    = new Apint( 4L);
-        result  = new Apfloat(0L,precI+50);
-        One     = new Apfloat(1L,precI+50 );
+        result  = new Apfloat(0L,programParams.getPrecisionValue()+50);
+        One     = new Apfloat(1L,programParams.getPrecisionValue()+50 );
         c1103   = new Apint(1103);
         tmpNum  = one;
         tmpDen  = one;
         c26390  = new Apint(26390);
         c396_4  = new Apint(396*396*396*99L);
-        end     = precI/7L +2;
+        end     = programParams.getPrecisionValue()/7L +2;
         ChSzAp  = new Apint(ChSz);
     }
     
     @Override
     public void run() {
+    	Utility.printMessage("Thread: " + myLabel + " started", programParams);
         while (!update()) {
             tmpNum = one;
             tmpDen = one;
@@ -67,6 +71,7 @@ public class PiThread extends Thread {
                 curr   =  curr.add(one);
             }
         }
+        Utility.printMessage("Thread: " + myLabel + " finished" , programParams);
     }
 
     public boolean update() {
