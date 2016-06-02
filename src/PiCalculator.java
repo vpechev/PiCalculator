@@ -1,21 +1,13 @@
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.math.BigDecimal;
-
-import javax.swing.JTextArea;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apfloat.Apfloat;
 import org.apfloat.ApfloatMath;
 import org.apfloat.Apint;
 
-import EDU.oswego.cs.dl.util.concurrent.Mutex;
-
 
 public class PiCalculator {
 	public static void initializeData(int numThreads, int chunkLength, int prec) {
-		Data.lock         = new Mutex();
+		Data.lock         = new ReentrantLock();
 		Data.denominator  =  new Apint[numThreads+2];
 		Data.numerator    =  new Apint[numThreads+2];
 		Data.predecesor    =  new int[numThreads+2];
@@ -61,11 +53,11 @@ public class PiCalculator {
 	      result            = Data.result[0].multiply(mult);
 	      long   end_time   = System.nanoTime();
 	      double difference = (end_time - start_time)*1e-6;  
-	      System.out.println("result: " + result.toString(true));
+//	      System.out.println("1/pi: " + result.toString(true));
 	      
 	      Apfloat pi9 = new Apfloat(Constants.PI_9, programParams.getPrecisionValue());
-	      System.out.println("result multiplied by pi " + result.multiply(pi9).toString(true));
-	      System.out.println("diff: " + difference);
+//	      System.out.println("result multiplied by pi " + result.multiply(pi9).toString(true));
+//	      System.out.println("diff: " + difference);
 	      
 	      return result;
     }

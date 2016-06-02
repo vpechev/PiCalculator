@@ -1,11 +1,10 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.*;
 
 public class ClassFrame extends JFrame implements ActionListener {
-
+	private static final long serialVersionUID = -1981919741026612102L;
 	private JPanel myPanel;
 	private JTextField numberOfThreadsField;
 	private JTextField precisionField;
@@ -56,9 +55,12 @@ public class ClassFrame extends JFrame implements ActionListener {
         logsField = new JTextArea();
         logsField.setEditable(false);
         JLabel logsLabel = new JLabel("Logs");
-        logsLabel.setLabelFor(logsField);
+        
+        JScrollPane scroll = new JScrollPane(logsField);
+        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         myPanel.add(logsLabel);
-        myPanel.add(logsField);
+        myPanel.add(scroll, BorderLayout.CENTER);
+        //myPanel.add(logsField);
     }
 
     public void actionPerformed(ActionEvent e)

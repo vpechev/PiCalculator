@@ -1,8 +1,6 @@
-import java.util.logging.Level;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -15,8 +13,10 @@ public class Cli {
 
 		this.args = args;
 
-		options.addOption("h", "help", false, "show help.");
-		options.addOption("v", "var", true, "Here you can set parameter .");
+		options.addOption("t", true, "thread");
+		options.addOption("p", true, "precision");
+		options.addOption("q", true, "precision");
+		options.addOption("o", true, "output file");
 
 	}
 

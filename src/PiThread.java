@@ -1,6 +1,3 @@
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apfloat.Apfloat;
 import org.apfloat.Apint;
 import org.apfloat.ApintMath;
@@ -29,7 +26,6 @@ public class PiThread extends Thread {
     private final Apint c396_4;
     private final int   ChSz;
     private final Apint ChSzAp;
-    private boolean check;
     private static ProgramParams programParams;
     
     public PiThread(int numLabel, ProgramParams programParams, int chunkLength) {
@@ -54,7 +50,7 @@ public class PiThread extends Thread {
     
     @Override
     public void run() {
-    	Utility.printMessage("Thread: " + myLabel + " started", programParams);
+    	Utility.printLogsMessage("Thread: " + myLabel + " started", programParams);
         while (!update()) {
             tmpNum = one;
             tmpDen = one;
@@ -71,15 +67,11 @@ public class PiThread extends Thread {
                 curr   =  curr.add(one);
             }
         }
-        Utility.printMessage("Thread: " + myLabel + " finished" , programParams);
+        Utility.printLogsMessage("Thread: " + myLabel + " finished" , programParams);
     }
 
     public boolean update() {
-        try {
-            Data.lock.acquire();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(PiThread.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Data.lock.lock();
         // handle data passed to you;
 //        if(Data.last==myLabel && Data.pInt<end){
 //            Data.pInt +=ChSz;
@@ -121,7 +113,7 @@ public class PiThread extends Thread {
         Data.progress = curr.add(ChSzAp);
         Data.pInt     = Data.pInt + ChSz;
         
-        Data.lock.release();
+        Data.lock.unlock();
         return Data.pInt>end+ChSz;
     }
 

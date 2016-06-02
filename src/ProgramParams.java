@@ -12,7 +12,7 @@ public class ProgramParams {
 		this.threadsCount = threadsCount;
 		this.precisionValue = precisionValue;
 		this.isQuiet = isQuiet;
-		this.outputFileName = fileName != null ? fileName : "result.txt";
+		this.outputFileName = (fileName != null && fileName != "") ? fileName + ".txt" : "result.txt";
 		this.resultField = resultField;
 		this.logsField = logsField;
 	}

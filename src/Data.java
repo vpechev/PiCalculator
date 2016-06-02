@@ -1,4 +1,5 @@
-import EDU.oswego.cs.dl.util.concurrent.Mutex;
+import java.util.concurrent.locks.Lock;
+
 import org.apfloat.Apfloat;
 import org.apfloat.Apint;
 
@@ -11,5 +12,5 @@ public class Data {
     public static Apint numerator  [];
     public static Apint denominator[];
     public static Apfloat result      [];
-    public static Mutex lock;
+    public static Lock lock;
 }
