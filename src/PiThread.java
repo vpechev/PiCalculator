@@ -3,14 +3,9 @@ import org.apfloat.Apint;
 import org.apfloat.ApintMath;
 
 public class PiThread extends Thread {
-
-    public Long end;
-    public int myLabel;
-    public int chSdSub;
-    public Long prInt;
-    public int chSrSub;
-    public int prd;
-    public int suc;
+	public int prInt;
+    public int numThreads;
+    public int ind;
     public Apfloat  result;
     private Apint tmpNum, tmpDen;
     private final Apint one;
@@ -26,12 +21,15 @@ public class PiThread extends Thread {
     private final Apint c396_4;
     private final int   ChSz;
     private final Apint ChSzAp;
+    private final int myLabel;
     private static ProgramParams programParams;
     
     public PiThread(int numLabel, ProgramParams programParams, int chunkLength) {
     	PiThread.programParams = programParams;
-        myLabel = numLabel+1;
-        ChSz    = chunkLength;
+    	myLabel = numLabel;
+    	ChSz    = chunkLength;
+        prInt   = programParams.getPrecisionValue();
+        this.numThreads = programParams.getThreadsCount();
         zero    = new Apint(0L);
         one     = new Apint( 1L);
         two     = new Apint( 2L);
@@ -44,14 +42,14 @@ public class PiThread extends Thread {
         tmpDen  = one;
         c26390  = new Apint(26390);
         c396_4  = new Apint(396*396*396*99L);
-        end     = programParams.getPrecisionValue()/7L +2;
         ChSzAp  = new Apint(ChSz);
+        ind =1;
     }
     
     @Override
     public void run() {
     	Utility.printLogsMessage("Thread: " + myLabel + " started", programParams);
-        while (!update()) {
+    	while (!update()) {
             tmpNum = one;
             tmpDen = one;
             result = zero;
@@ -66,55 +64,51 @@ public class PiThread extends Thread {
             
                 curr   =  curr.add(one);
             }
+        Data.result     [ind] = result;
+        Data.numerator  [ind] = tmpNum;
+        Data.denominator[ind] = tmpDen;
+        //Data.passed[(ind-1)/numThreads]++;
         }
+    	
+    	while(!update2()){
+            tmpNum = one;
+            tmpDen = one;
+            result = zero;               
+            int start = (ind-1) * numThreads+1;
+            for ( int i = 0; i < numThreads; i++) {
+                tmpNum = tmpNum.multiply(Data.numerator[start-1]);   
+                tmpDen = tmpDen.multiply(Data.denominator[start-1]);
+                result = result.add(Data.result[start].multiply(tmpNum).divide(tmpDen));   start++;
+            }
+            Data.result2     [ind] = result;
+            Data.numerator2  [ind] = tmpNum;
+            Data.denominator2[ind] = tmpDen;
+        }
+    	
         Utility.printLogsMessage("Thread: " + myLabel + " finished" , programParams);
     }
 
     public boolean update() {
         Data.lock.lock();
-        // handle data passed to you;
-//        if(Data.last==myLabel && Data.pInt<end){
-//            Data.pInt +=ChSz;
-//            Data.progress.add(ChSzAp);
-//            Data.lock.release();
-//            return false;
-//        }
-//        System.out.println("===="+myLabel);
-//        System.out.println(result.toString(true));
-        result = result.add(Data.result[myLabel].multiply(tmpNum).divide(tmpDen));
-        Data.result     [myLabel] = zero;
-        
-        tmpNum = tmpNum.multiply(Data.numerator[myLabel]);   
-        Data.numerator  [myLabel] = one;
-
-        tmpDen = tmpDen.multiply(Data.denominator[myLabel]);
-        Data.denominator[myLabel] = one;
-       
-//        if( Data.succesor[Data.predecesor[myLabel]] != myLabel&& Data.succesor[Data.predecesor[myLabel]] != Data.succesor.length-1 ){
-//            System.out.println("F\nU\nC\nK\n!\n!\n!\n!\n!");
-//        }
-// update relationships    
-        prd   = Data.predecesor[myLabel];    
-        Data.predecesor[myLabel] = Data.last;
-        Data.predecesor[Data.succesor[myLabel]] = prd;
-
-        suc   = Data.succesor[myLabel];
-        Data.succesor[Data.last] = myLabel;
-        Data.succesor[myLabel] = myLabel;
-        Data.succesor[prd]   = suc;
-        Data.last = myLabel;
-
-        Data.result[prd]       =  Data.result[prd].add((result.multiply(Data.numerator[prd]))
-                                                          .divide(Data.denominator[prd]));
-        Data.numerator  [prd] =  Data.numerator[prd].multiply(tmpNum) ;                        
-        Data.denominator[prd] = Data.denominator[prd].multiply(tmpDen) ;
-
         curr         = Data.progress;
-        Data.progress = curr.add(ChSzAp);
-        Data.pInt     = Data.pInt + ChSz;
-        
+        Data.progress = curr.add(ChSzAp);  
+        Data.passed[2*((ind-1)/numThreads)]++;
+        ind = Data.pInt;   
+        Data.pInt     = Data.pInt+1;
         Data.lock.unlock();
-        return Data.pInt>end+ChSz;
+        return ChSz*(ind-1)*7>prInt+10||ind>(Data.denominator.length-1);
+    }
+
+    public boolean update2(){
+        boolean start;
+            
+        Data.lock.lock();
+        ind = Data.pInt2;
+        start = Data.passed[(ind-1)*2]!= Data.passed[(ind-1)*2+1];
+        Data.pInt2 = Data.pInt2+(Data.passed[(ind-1)*2]/Data.passed[(ind-1)*2+1]);
+
+        Data.lock.unlock();
+        return start||ind>=Data.denominator2.length;//||Data.numerator[(ind-1) * numThreads+1].equals(one);
     }
 
 }

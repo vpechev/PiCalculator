@@ -37,9 +37,12 @@ public class Utility {
 		
 		String resultMsg =  "1/Pi = " + result;
 		String timeMsg = "Total calculating time: " + totalTime;
+		
+		if(!programParams.isQuiet()){
+			programParams.getResultField().setText("");
+		}
 		Utility.printResultMessage(resultMsg, programParams);
 		Utility.printResultMessage(timeMsg, programParams);
-		
 		
 		Utility.writeToFile(programParams.getOutputFileName(), result);
     }
