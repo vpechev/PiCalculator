@@ -48,6 +48,7 @@ public class PiThread extends Thread {
     
     @Override
     public void run() {
+    	long t1 = System.currentTimeMillis();
     	Utility.printLogsMessage("Thread: " + myLabel + " started", programParams);
     	while (!update()) {
             tmpNum = one;
@@ -85,7 +86,8 @@ public class PiThread extends Thread {
             Data.denominator2[ind] = tmpDen;
         }
     	
-        Utility.printLogsMessage("Thread: " + myLabel + " finished" , programParams);
+    	long totalExecTime = System.currentTimeMillis() - t1; 
+        Utility.printLogsMessage("Thread: " + myLabel + " finished for " + totalExecTime + "ms." , programParams);
     }
 
     public boolean update() {

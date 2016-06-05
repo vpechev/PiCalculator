@@ -5,7 +5,6 @@ import java.io.IOException;
 
 public class Utility {
 	public static void printResultMessage(String msg, ProgramParams programParams){
-		System.out.println(msg);
 		if(!programParams.isQuiet()){
 			programParams.getResultField().append("\n" + msg);
 		}
@@ -35,13 +34,16 @@ public class Utility {
 		long t2 = System.currentTimeMillis();
 		long totalTime = t2 - t1;
 		
-		String resultMsg =  "1/Pi = " + result;
+		String resultMsg =  "Pi = " + result;
 		String timeMsg = "Total calculating time: " + totalTime;
 		
 		if(!programParams.isQuiet()){
 			programParams.getResultField().setText("");
+			Utility.printResultMessage(resultMsg, programParams);
+		} else {
+			System.out.println("Total execution time: " + totalTime);
 		}
-		Utility.printResultMessage(resultMsg, programParams);
+		
 		Utility.printResultMessage(timeMsg, programParams);
 		
 		Utility.writeToFile(programParams.getOutputFileName(), result);

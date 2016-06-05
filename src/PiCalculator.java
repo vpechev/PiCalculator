@@ -1,12 +1,13 @@
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apfloat.Apfloat;
+import org.apfloat.ApfloatContext;
 import org.apfloat.ApfloatMath;
 import org.apfloat.Apint;
 
 
 public class PiCalculator {
-	public static void initializeData(int numThreads, int chunkLength, Long prec) {
+	public static void initializeData(int numThreads, int chunkLength, int prec) {
         Data.lock         = new ReentrantLock();
         Data.denominator  =  new Apint[10*numThreads+2];
         Data.numerator    =  new Apint[10*numThreads+2];
@@ -29,7 +30,7 @@ public class PiCalculator {
             
         }
         Data.passed[0]  -=numThreads;
-        Data.passed[(prec.intValue()+10)/(chunkLength*7*numThreads)*2+1] += ((prec.intValue()+10)%(numThreads*chunkLength*7))/7 +1;
+        Data.passed[(prec+10)/(chunkLength*7*numThreads)*2+1] += ((prec+10)%(numThreads*chunkLength*7))/7 +1;
        // System.out.println((prec.intValue()+10)/(chunkLength*7*numThreads));
        // System.out.println( ((prec.intValue()+10)%(numThreads*chunkLength*7))/7 +1);
         Data.result         [0]= new Apfloat(1103, prec+5);
@@ -46,7 +47,7 @@ public class PiCalculator {
 	public static Apfloat calculatePi(ProgramParams programParams){
 		int numThreads = programParams.getThreadsCount();
 	      
-        Long precision = 1000L;
+        int precision = programParams.getPrecisionValue();
         Double   a = precision/(7.0*10*numThreads)+1L;
         Long chunkLengthtmp = a.longValue();
         int chunkLength = chunkLengthtmp.intValue() ;
@@ -56,6 +57,10 @@ public class PiCalculator {
         for (int i = 0; i < numThreads; i++) {
             myThreads[i] = new PiThread(i, programParams, chunkLength);
         }
+        
+        ApfloatContext ctx = ApfloatContext.getContext();
+        ctx.setNumberOfProcessors(1);
+        
         //long start_time = System.nanoTime();
         for (int i = 0; i < numThreads; i++) {
             myThreads[i].start();
@@ -80,6 +85,6 @@ public class PiCalculator {
         //Apfloat pi9 = new Apfloat(Constants.PI_9, precision+5);
         //System.out.println(Apfloat.ONE.divide(result).subtract(pi9).toString());
         //System.out.println(difference);
-        return result;
+        return Apfloat.ONE.divide(result);
     }
 }

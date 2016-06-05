@@ -48,9 +48,13 @@ public class ClassFrame extends JFrame implements ActionListener {
         outputField = new JTextArea();
         outputField.setEditable(false);
         JLabel resultLabel = new JLabel("Result");
-        threadsCountLabel.setLabelFor(outputField);
+        
+        JScrollPane resultScroll = new JScrollPane(outputField);
+        resultScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        //threadsCountLabel.setLabelFor(outputField);
+        //myPanel.add(resultLabel);
         myPanel.add(resultLabel);
-        myPanel.add(outputField);
+        myPanel.add(resultScroll, BorderLayout.CENTER);
 
         logsField = new JTextArea();
         logsField.setEditable(false);
